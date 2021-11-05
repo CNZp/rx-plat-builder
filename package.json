@@ -1,6 +1,6 @@
 {
   "name": "rx-plat-builder",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Build base-platform project, get dist dir.",
   "main": "index.js",
   "scripts": {

@@ -9,6 +9,7 @@ const {
   mediasBuilding,
   buildSuccess,
 } = require("./notice");
+var pjson = require('../package.json');
 
 const WEBAPP_DIR = "web/src/main/webapp";
 const DIST_DIR = "dist";
@@ -93,7 +94,7 @@ function buildPages() {
   var sourcePath = WEBAPP_DIR + "/WEB-INF";
   var targetPath = DIST_DIR + ctxpath + "/page";
   copyDirSync(sourcePath, targetPath, function (content) {
-    return content.replace(/"\$\{ctxPath\}/g, ctxpath);
+    return content.replace(/\$\{ctxPath\}/g, ctxpath);
   });
 }
 
@@ -107,7 +108,7 @@ function buildMedias() {
 function useCommand() {
   const program = new commander.Command();
   program
-    .version("0.0.1")
+    .version(pjson?.version || "未知")
     .option(
       "-c, --ctxpath <ctxpath>",
       "期望的项目路径，html中${ctxPath}占位符将替换为该项目路径",

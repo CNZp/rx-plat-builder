@@ -9,11 +9,11 @@ const {
   mediasBuilding,
   buildSuccess,
 } = require("./notice");
-var pjson = require('../package.json');
+var pjson = require("../package.json");
 
 const WEBAPP_DIR = "web/src/main/webapp";
 const DIST_DIR = "dist";
-
+const TEXTFILE_REG = /(html|js|css)$/g;
 var ctxpath = "/";
 var fileNum = 0;
 
@@ -74,11 +74,16 @@ function copyDirSync(sourcePath, targetPath, cb) {
 
   if (st.isFile()) {
     fileNum++;
-    var content = fs.readFileSync(sourcePath, "utf8");
     var writable = fs.createWriteStream(targetPath);
-    var writeContent = typeof cb === "function" ? cb(content) : content;
-    if (typeof writeContent === "string") {
-      writable.write(writeContent);
+    if (sourcePath.match(TEXTFILE_REG)) {
+      var content = fs.readFileSync(sourcePath, "utf8");
+      var writeContent = typeof cb === "function" ? cb(content) : content;
+      if (typeof writeContent === "string") {
+        writable.write(writeContent);
+      }
+    } else {
+      var readable = fs.createReadStream(sourcePath);
+      readable.pipe(writable);
     }
   } else if (st.isDirectory()) {
     fs.mkdirSync(targetPath);
@@ -116,9 +121,9 @@ function useCommand() {
     );
   program.parse();
   ctxpath = program.opts().ctxpath;
-  
+
   if (ctxpath) {
-    if(!ctxpath.startsWith("/")){
+    if (!ctxpath.startsWith("/")) {
       ctxpath = "/" + ctxpath;
     }
     checkWebapp(function () {
@@ -127,8 +132,10 @@ function useCommand() {
       });
     });
 
-    setTimeout(function(){buildSuccess(fileNum)},100);
-  }else{
+    setTimeout(function () {
+      buildSuccess(fileNum);
+    }, 100);
+  } else {
     cxtpathNotExist();
   }
 }
